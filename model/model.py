@@ -33,3 +33,5 @@ class Model:
     @property
     def listGenre(self):
         return self._listGenre
+    def sjdhgw(self):
+        pass
