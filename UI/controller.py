@@ -9,7 +9,10 @@ class Controller:
         self._model = model
 
     def fillDDGenre(self):
-        pass
+        genreList = self._model._listGenre
+        for g in genreList:
+            self._view._ddGenre.options.append(ft.dropdown.Option(g))
+        self._view.update_page()
 
     def handleCreaGrafo(self, e):
         pass
@@ -19,3 +22,11 @@ class Controller:
 
     def handleCammino(self,e):
         pass
+
+    # def fillDDArtist(self):
+    #     genre = self._view._ddGenre.value
+    #     if genre is None:
+    #         self._view.create_alert("Attenzione! Seleziona un genere")
+    #         self._view.update_page()
+    #         return
+    #     artistsList = self._model._listArtist
