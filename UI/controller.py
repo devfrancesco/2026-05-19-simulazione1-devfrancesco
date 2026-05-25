@@ -15,10 +15,21 @@ class Controller:
         self._view.update_page()
 
     def handleCreaGrafo(self, e):
-        pass
-
-    def handleCreaGrafo(self,e):
-        pass
+        genre = self._view._ddGenre.value
+        if genre is None:
+            self._view.create_alert("Seleziona un genere!")
+            return
+        self._model.buildGraph(genre)
+        n_nodi, n_archi, best, inf, top5 = self._model.getGraphDetails()
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(ft.Text("Grafo correttamente creato:"))
+        self._view.txt_result.controls.append(ft.Text(f"Numero di nodi: {n_nodi}"))
+        self._view.txt_result.controls.append(ft.Text(f"Numero di archi: {n_archi}"))
+        self._view.txt_result.controls.append(ft.Text(f"Artista più influente: {best}, influenza: {inf}"))
+        self._view.txt_result.controls.append(ft.Text(f"Top 5 archi:"))
+        for u,v,w in top5:
+            self._view.txt_result.controls.append(ft.Text(f"{u.Name} -> {v.Name} : {w}"))
+        self._view.update_page()
 
     def handleCammino(self,e):
         pass
