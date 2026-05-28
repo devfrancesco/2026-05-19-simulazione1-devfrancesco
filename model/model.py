@@ -1,3 +1,4 @@
+import copy
 import heapq
 
 import networkx as nx
@@ -10,13 +11,37 @@ class Model:
         self._graph = nx.DiGraph()
         self._idMapArt = {}
         self._listGenre = DAO.getAllGenre()
+        self._artists = []
+        self._optPath = []
+
+    def getMaxPath(self, artista_partenza):
+        self._optPath = []
+        parziale = [artista_partenza]
+        self._ricorsione(parziale, peso_prec = -1) #nessun arco può avere peso megativo
+        return self._optPath
+
+    def _ricorsione(self, parziale, peso_prec):
+        if len(parziale) > len(self._optPath):
+            self._optPath = copy.deepcopy(parziale)
+        nodo_corrente = parziale[-1]
+        for vicino in self._graph.neighbors(nodo_corrente): #solo archi uscenti
+            dati_arco = self._graph.get_edge_data(nodo_corrente, vicino)
+            peso_arco_corrente = dati_arco['weight'] #peso
+            if peso_arco_corrente > peso_prec:
+                if vicino not in parziale:
+                    parziale.append(vicino)
+                    self._ricorsione(parziale, peso_arco_corrente)
+                    parziale.pop()
+
+        # predecessore = self._graph.predecessors(nodo_corrente)
+        # self._graph.get_edge_data(predecessore, nodo_corrente)
 
 
     def buildGraph(self, genre):
         self._graph.clear()
         self._idMapArt.clear()
-        artists = DAO.getArtistsPopolarita(genre)
-        for a in artists:
+        self._artists = DAO.getArtistsPopolarita(genre)
+        for a in self._artists:
             self._idMapArt[a.ArtistId] = a
             self._graph.add_node(a)
         pairs = DAO.getConnectedPairs(genre)
@@ -31,11 +56,9 @@ class Model:
             if a.popolarita <= b.popolarita:
                 self._graph.add_edge(b,a, weight=peso)
 
-    def getGraphDetails(self):
-        n_nodi = self._graph.number_of_nodes()
-        n_archi = self._graph.number_of_edges()
-        if n_nodi == 0:
-            return 0, 0, None, 0, []
+    def getTop(self):
+        if self._graph.nodes == 0:
+            return None, 0, []
         bestArtist = None
         bestInfluenza = None
         for artist in self._graph.nodes():
@@ -47,6 +70,12 @@ class Model:
                 bestInfluenza = influenza
                 bestArtist = artist
         # TOP 5
-        all_edges = [(u, v, d['weight']) for u, v, d in self._graph.edges(data=True)]
-        top5 = sorted(all_edges, key=lambda x: x[2], reverse=True)[:5]
-        return n_nodi, n_archi, bestArtist, bestInfluenza, top5
+        top5 = sorted(self._graph.edges(data=True), key=lambda x: x[2]['weight'], reverse=True)[:5]
+        return bestArtist, bestInfluenza, top5
+
+    def getGraphDetails(self):
+        return len(self._graph.nodes), len(self._graph.edges)
+
+    def getAllArtists(self):
+        return self._artists
+

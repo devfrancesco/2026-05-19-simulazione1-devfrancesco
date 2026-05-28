@@ -20,24 +20,23 @@ class Controller:
             self._view.create_alert("Seleziona un genere!")
             return
         self._model.buildGraph(genre)
-        n_nodi, n_archi, best, inf, top5 = self._model.getGraphDetails()
+        n_nodi, n_archi = self._model.getGraphDetails()
+        best, inf, top5 = self._model.getTop()
         self._view.txt_result.controls.clear()
         self._view.txt_result.controls.append(ft.Text("Grafo correttamente creato:"))
         self._view.txt_result.controls.append(ft.Text(f"Numero di nodi: {n_nodi}"))
         self._view.txt_result.controls.append(ft.Text(f"Numero di archi: {n_archi}"))
         self._view.txt_result.controls.append(ft.Text(f"Artista più influente: {best}, influenza: {inf}"))
         self._view.txt_result.controls.append(ft.Text(f"Top 5 archi:"))
-        for u,v,w in top5:
-            self._view.txt_result.controls.append(ft.Text(f"{u.Name} -> {v.Name} : {w}"))
+        for e in top5:
+            self._view.txt_result.controls.append(ft.Text(f"{e[0]} -> {e[1]} : {e[2]['weight']}"))
+        self.fillDDArtists()
         self._view.update_page()
 
     def handleCammino(self,e):
         pass
 
-    # def fillDDArtist(self):
-    #     genre = self._view._ddGenre.value
-    #     if genre is None:
-    #         self._view.create_alert("Attenzione! Seleziona un genere")
-    #         self._view.update_page()
-    #         return
-    #     artistsList = self._model._listArtist
+    def fillDDArtists(self):
+        for a in self._model.getAllArtists():
+            self._view._ddArtist.options.append(ft.dropdown.Option(a))
+        self._view.update_page()
