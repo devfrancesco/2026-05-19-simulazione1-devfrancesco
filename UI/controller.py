@@ -34,9 +34,21 @@ class Controller:
         self._view.update_page()
 
     def handleCammino(self,e):
-        pass
+        actor = self._view._ddArtist.value
+        if actor is None:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text("Seleziona un attore dal menu a tendina.", color="red"))
+            self._view.update_page()
+            return
+        self._view.txt_result.controls.clear()
+        actor_id = int(actor)
+        listOptActor = self._model.getMaxPath(actor_id)
+        for a in listOptActor:
+            self._view.txt_result.controls.append(ft.Text(a))
+        self._view.update_page()
 
     def fillDDArtists(self):
+        self._view._ddArtist.options.clear()
         for a in self._model.getAllArtists():
-            self._view._ddArtist.options.append(ft.dropdown.Option(a))
+            self._view._ddArtist.options.append(ft.dropdown.Option(key=a.ArtistId, text=a))
         self._view.update_page()

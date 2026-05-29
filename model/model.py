@@ -1,5 +1,4 @@
 import copy
-import heapq
 
 import networkx as nx
 
@@ -16,7 +15,8 @@ class Model:
 
     def getMaxPath(self, artista_partenza):
         self._optPath = []
-        parziale = [artista_partenza]
+        artistaP= self._idMapArt[artista_partenza]
+        parziale = [artistaP]
         self._ricorsione(parziale, peso_prec = -1) #nessun arco può avere peso megativo
         return self._optPath
 
